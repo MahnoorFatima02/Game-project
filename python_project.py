@@ -149,7 +149,7 @@ def start_game():
         elif (index == len(questions_answers) - 1) and (co2_points < 4500):
             riddle_question()
         else:
-            print(f"You co2_points {co2_points} are not enough to enter the safe zone ")
+            print(f"You co2_points {co2_points} are not enough to enter the safe zone")
 
 
 if __name__ == "__main__":
