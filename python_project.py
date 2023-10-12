@@ -5,12 +5,12 @@ import threading
 import mysql.connector
 import simple_colors
 from art import *
-# from rich import print
+from rich import print
 
 import time
 import datetime
-from PIL import Image
 
+import mysql.connector
 connection = mysql.connector.connect(
     host='127.0.0.1',
     port=3306,
@@ -21,7 +21,7 @@ connection = mysql.connector.connect(
 )
 
 maximum_height_of_airport_selected = "14472"
-co2_points = 2500
+co2_budget_points = 2500
 
 
 def countdown():
@@ -50,16 +50,16 @@ def existing_player_login(name, password):
     cursor = execute_query(sql)
     query_result = cursor.fetchall()
     if cursor.rowcount > 0:
-        print(simple_colors.red(f"Welcome {query_result[0][1]} to the game!"))
+        print(f"[sea_green2]Welcome {query_result[0][1]} to the game![/sea_green2]")
         return True
     else:
-        print(simple_colors.yellow("User does not exist"))
-
+        print("[bright_red]User does not exist[/bright_red]")
     return False
 
 
 def create_questions():
-    question_sql = "SELECT name, iso_country, iso_region, elevation_ft FROM airport where  elevation_ft > 14472 order by elevation_ft asc"
+    question_sql = ("SELECT name, iso_country, iso_region, elevation_ft FROM airport "
+                    "where elevation_ft > 14472 order by elevation_ft asc")
     question_cursor = execute_query(question_sql)
     question_query_result = question_cursor.fetchall()
 
@@ -72,7 +72,7 @@ def create_questions():
         for row in question_query_result:
             qa = {}
             choices = []
-            question = "What is the name of airport in iso country " + row[1]
+            question = "What is the name of airport in iso country " + row[1] + " with elevation: " + str(row[3]) + " ft"
             answer = row[0]
             hint = row[2]
             choices.append(answer)
@@ -103,7 +103,7 @@ def robbed_question():
 
 
 def art_question():
-    global co2_points
+    global co2_budget_points
     list = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u",
             "v", "w", "x", "y", "z"]
     text_length = 4
@@ -113,11 +113,11 @@ def art_question():
     art_code_answer = input("What is the code, type in lowercase: ")
     if art_code_answer == random_text:
         title = pyfiglet.figlet_format('Hurray!! Correct', font='banner3')
-        print(simple_colors.green(f"{title}"))
-        co2_points = co2_points + 700
-        print(simple_colors.green(f'Your have gained 700 points, your new co2_points are: {co2_points}'))
+        print(f"[sea_green2]{title}[/sea_green2]")
+        co2_budget_points = co2_budget_points + 700
+        print(f'[dark_slate_gray2]Your have gained 700 points, your new co2_points are: {co2_budget_points}[/dark_slate_gray2]')
     else:
-        print(simple_colors.yellow("You gain no bonus points"))
+        print("[bright_red]You gain no bonus points[/bright_red]")
     return
 
 
@@ -133,7 +133,7 @@ def time_limit_answer():
     input_thread.join(timeout=180)
 
     if input_thread.is_alive():
-        print("Too bad, time is up. You die")
+        print("[bright_red]Too bad, time is up. You die[/bright_red]")
     else:
         print(f"Your answer is: {user_input}")
     return user_input
@@ -144,6 +144,7 @@ def riddle_question():
     random.shuffle(number_list)
     code_separate = number_list[:3]
     code = ''.join(code_separate)
+    #print(code)
     remaining_numbers = [item for item in number_list if item not in code_separate]
     hint1 = []
     hint1.append(code_separate[1])
@@ -193,7 +194,7 @@ def riddle_question():
 
 def game_over():
     title = pyfiglet.figlet_format('YOU LOSE, GAME OVER', font='doom')
-    print(simple_colors.red(f"{title}"))
+    print(f"[bright_red]{title}[/bright_red]")
     print('   _____ \n'
           '  |     | \n'
           '  |     | \n'
@@ -206,46 +207,61 @@ def game_over():
 
 def win_game():
     title = pyfiglet.figlet_format('Welcome to Safe Heavens', font='doom')
-    print(simple_colors.blue(f"{title}"))
+    print(f"[orange3]{title}[/orange3]")
 
 
 def start_game():
-    global co2_points
+    global co2_budget_points
     tprint("Welcome", font="random")
     time.sleep(2)
-    print(simple_colors.red('Lets begin the adventure!', ['bold']))
+    print("[bold magenta]Lets begin the adventure![/bold magenta]")
     time.sleep(1)
-    print(simple_colors.yellow('Outline of our story: ', ['bold']))
+    print("[bold magenta]Outline of our story: [/bold magenta] \n")
     time.sleep(3)
-    print(simple_colors.yellow('There was a disease break out in China and all the other countries having lower '
-                               'altitude than China have been destroyed.'))
+    print("[bold magenta]A toxic cloud of unknown origin has destroyed human civilization![/bold magenta] \n")
     time.sleep(3)
-    print(simple_colors.yellow('Your only chance of survival is to go to countries having higher altitude than China'))
+    print("[bold magenta]It is known that all the places on Earth with altitude lower than 14472 ft were destroyed.[/bold magenta]\n")
     time.sleep(3)
-    print(simple_colors.yellow('You have been given: '))
-    time.sleep(1)
-    print(simple_colors.yellow('2500 co2 points.', ['bold', 'underlined']))
-    time.sleep(1)
-    print(simple_colors.yellow('You will gain more points as game progress..'))
+    print("[bold magenta]You are a pilot of a commercial airplane, and you have to save your crew and passengers. [/bold magenta]\n")
     time.sleep(3)
-    print(simple_colors.red("Get ready!!", ['bold']))
+    print("[bold magenta]You start in the Daocheng Airport (ZUDC) of China and move to higher altitude airports, with the hints provided along the way.[/bold magenta] \n ")
     time.sleep(3)
-    print(
-        simple_colors.yellow('Kindly choose 1 option below to login the game: \n 1. New Player \n 2. exisitng player'))
+    print("[bold magenta]You have been given: [/bold magenta]")
+    time.sleep(3)
+    print("[bold magenta]2500 co2 budget points.[/bold magenta] \n")
+    time.sleep(3)
+    print("[bold magenta]As you fly to higher airports you co2_budget decreases but you can gain more along the way..[/bold magenta]\n ")
+    time.sleep(3)
+    print("[bold magenta]You need atleast 4500 co2 budget points to take the final journey into safe heaven..  [/bold magenta]\n ")
+    time.sleep(4)
+    print("[bold magenta]You have to choose the right airport name to reach it.\n")
+    time.sleep(4)
+    print("[turquoise2]Get ready!! [/turquoise2]\n")
+    time.sleep(3)
+    print("[chartreuse1]Kindly choose 1 option below to login the game: \n 1. New Player \n 2. Exisitng player [/chartreuse1] \n")
     login_option = int(input("Enter your answer here: "))
     if login_option == 1:
         name_value = input("Enter your name here: ")
         password_value = input("Enter your password here: ")
-        print(new_player_registration(name_value, password_value))
+        new_user_id = new_player_registration(name_value, password_value)
+        if new_user_id > 0:
+            print("[chartreuse1]User registered successfully!![/chartreuse1]")
+        else:
+            print("[bright_red]There was some problem with the registration[/bright_red]")
 
     elif login_option == 2:
-        name_value = input("Enter your name here: ")
-        password_value = input("Enter your password here: ")
-        is_user_logged_in = existing_player_login(name_value, password_value)
-        if is_user_logged_in == False:
-            return
+        for i in range(0, 3):
+            name_value = input("Enter your name here: ")
+            password_value = input("Enter your password here: ")
+            is_user_logged_in = existing_player_login(name_value, password_value)
+            if is_user_logged_in:
+                break
+            else:
+                if i == 2:
+                    print("[bright_red]You have entered wrong credentials for 3 times. Exiting [/bright_red]")
+                    return
     else:
-        print("Invalid option selected")
+        print("[bright_red]Invalid option selected[/bright_red]")
         return
 
     countdown()
@@ -256,24 +272,23 @@ def start_game():
     for index in range(0, len(questions_answers)):
         if index == robbing_question:
             title = pyfiglet.figlet_format('"YOU ARE ROBBED"!!', font='banner')
-            print(simple_colors.magenta(f"{title}"))
+            print(f"[green1]{title}[/green1]")
             bonus_question_answer = robbed_question()
-            print(simple_colors.blue(bonus_question_answer["question"], ['bold']))
+            print(f"[green_yellow]{bonus_question_answer['question']} [/green_yellow]")
             bonus_answer = input("Enter your answer here: ")
             if "not peel" in bonus_answer:
                 title = pyfiglet.figlet_format('You escaped the robber!!', font='digital')
-                print(simple_colors.cyan(f"{title}"))
-                print(
-                    simple_colors.yellow("YOUR CO2 POINTS REMAIN THE SAME: " + str(co2_points), ['bold', 'underlined']))
+                print(f"[bright_cyan]{title}[/bright_cyan]")
+                print(f"[bright_magenta]YOUR CO2 POINTS REMAIN THE SAME: [/bright_magenta] " + str(co2_budget_points))
             else:
-                co2_points = 0
-                print(simple_colors.yellow(f"Wrong answer. You loose all your co2 points {co2_points}"))
+                co2_budget_points = 0
+                print(simple_colors.yellow(f"Wrong answer. You loose all your co2 points {co2_budget_points}"))
         if index == bonus_question:
             title = pyfiglet.figlet_format('"Bonus Question"!!', font='3-d')
             print(simple_colors.magenta(f"{title}"))
             art_question()
 
-        print(simple_colors.blue(questions_answers[index]["question"], ['bold', 'underlined']))
+        print(f"[bright_green]{questions_answers[index]['question']}[/bright_green]")
 
         answer_choices = questions_answers[index]["choices"]
         answer = questions_answers[index]["answer"]
@@ -281,52 +296,52 @@ def start_game():
         for choice_index in range(0, len(answer_choices)):
             print(str(choice_index + 1) + ". " + answer_choices[choice_index])
 
-        print(simple_colors.red("Press h for hint. Note: your 300 points will be deducted for the hint."))
+        print("[deep_sky_blue1]You can buy hint by pressing 'h'. Note: your 300 points will be deducted for the hint.[/deep_sky_blue1]\n ")
         answer_index = input("Enter option number here: ")
         if answer_index == "h":
-            print(simple_colors.yellow("Your hint is the iso_region of airport : " + questions_answers[index]["hint"],
-                                       ['bold']))
-            co2_points = co2_points - 300
-            print(simple_colors.magenta(f"Now remaining co2_points after deduction are: {co2_points}", ['bold']))
+            print("\n")
+            print(f"[bright_green]Your hint is the iso_region of airport : [/bright_green]" + questions_answers[index]["hint"])
+            co2_budget_points = co2_budget_points - 300
+            print(f"[honeydew2]Now remaining co2_points after deduction are: {co2_budget_points}[/honeydew2] \n")
             answer_index = input("Enter option number here: ")
 
         if answer_choices[int(answer_index) - 1] == answer:
             title = pyfiglet.figlet_format('Correct', font='doom')
-            print(simple_colors.yellow(f"{title}"))
-            co2_points = co2_points + 500
-            print(simple_colors.yellow(f"You have gained 500 points. You total co2 points are: {co2_points}"))
+            print(f"[cyan2]{title}[/cyan2]")
+            co2_budget_points = co2_budget_points + 500
+            print(f"[wheat1]You have gained 500 points. You total co2 budget points are: {co2_budget_points}[/wheat1] \n")
+            print("\n")
             time.sleep(3)
         else:
-            title = pyfiglet.figlet_format('You lose', font='doom')
-            print(simple_colors.yellow(f"{title}"))
             game_over()
             break
 
-        if (index == len(questions_answers) - 1) and co2_points >= 4500:
-            print(f"Your co2_points are: {co2_points}")
-            print('riddle question: ', simple_colors.red(
-                'The points are less than 4000. You have final chance to answer this riddle question to enter in safe heavens',
-                'bold'))
+        if (index == len(questions_answers) - 1) and co2_budget_points >= 2000:
+            print(f"Your co2_points are: {co2_budget_points}")
+            print("[dark_slate_gray2]You have final chance to answer this riddle question to enter in safe heavens'[/dark_slate_gray2]")
             riddle = riddle_question()
             answer = time_limit_answer()
             if riddle["answer"] == answer:
-                co2_points = co2_points + 2000
-                if co2_points >= 5500:
+                co2_budget_points = co2_budget_points + 3000
+                if co2_budget_points >= 4500:
                     win_game()
-                else:
-                    print(f"You co2_points {co2_points} are not enough to enter the safe zone ")
+                if co2_budget_points < 4500:
+                    print(f"[bright_red]You co2_points {co2_budget_points} are not enough to enter the safe zone [/bright_red]")
                     game_over()
                     break
             if riddle["answer"] != answer:
-                print("Wrong answer")
-                if co2_points >= 5500:
+                title = pyfiglet.figlet_format('You lose', font='block')
+                print(f"[bright_red]{title}[/bright_red]")
+                if co2_budget_points >= 4500:
+                    print("[bright_yellow]You have given an extra life.. Since you have more tha 4500 co2_budget points at your end. [/bright_yellow]\n")
+                    print("[bright_yellow]Your points above 4500 will be saved for next time you play.. \n[/bright_yellow]")
                     win_game()
-                else:
+                if co2_budget_points < 4500:
                     game_over()
                     break
 
             else:
-                print(f"You co2_points {co2_points} are not enough to enter the safe zone ")
+                print(f"[bright_red]You co2_points {co2_budget_points} are not enough to enter the safe zone [/bright_red]")
                 game_over()
 
 
