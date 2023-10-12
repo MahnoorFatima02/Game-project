@@ -1,0 +1,5 @@
+mysql-connector-python==8.10
+colour==0.1.5
+pyfiglet==1.0.2
+art==6.1
+rich==13.6.0
