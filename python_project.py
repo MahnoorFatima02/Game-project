@@ -3,7 +3,6 @@ import random
 import pyfiglet
 import threading
 import mysql.connector
-import simple_colors
 from art import *
 from rich import print
 
@@ -50,7 +49,7 @@ def existing_player_login(name, password):
     cursor = execute_query(sql)
     query_result = cursor.fetchall()
     if cursor.rowcount > 0:
-        print(f"[sea_green2]Welcome {query_result[0][1]} to the game![/sea_green2]")
+        print(f"[sea_green2]Welcome {query_result[0][1]} to the game![/sea_green2]\n")
         return True
     else:
         print("[bright_red]User does not exist[/bright_red]")
@@ -63,9 +62,10 @@ def create_questions():
     question_cursor = execute_query(question_sql)
     question_query_result = question_cursor.fetchall()
 
-    choices_sql = " SELECT name FROM airport where elevation_ft < 14472 limit 600"
+    choices_sql = "SELECT name FROM airport where elevation_ft < 14472 limit 600"
     choices_cursor = execute_query(choices_sql)
     choices_query_result = choices_cursor.fetchall()
+
 
     question_answers = []
     if len(question_query_result) > 0:
@@ -77,7 +77,7 @@ def create_questions():
             hint = row[2]
             choices.append(answer)
             for i in range(0, 3):
-                choices.append(choices_query_result[random.randint(0, 600)][0])
+                choices.append(choices_query_result[random.randint(0, 590)][0])
 
             qa["question"] = question
             qa["answer"] = answer
@@ -93,7 +93,7 @@ def create_questions():
 
 def robbed_question():
     print("You have been robbed and all of your points have been gone. But you can gain all of your points by answering"
-          " this tricky question")
+          " this tricky question\n")
 
     bonus_qa = {}
     bonus_question = "Why should oranges wear sunscreen? "
@@ -117,7 +117,7 @@ def art_question():
         co2_budget_points = co2_budget_points + 700
         print(f'[dark_slate_gray2]Your have gained 700 points, your new co2_points are: {co2_budget_points}[/dark_slate_gray2]')
     else:
-        print("[bright_red]You gain no bonus points[/bright_red]")
+        print("[bright_red]You gain no bonus points[/bright_red]\n")
     return
 
 
@@ -206,7 +206,7 @@ def game_over():
 
 
 def win_game():
-    title = pyfiglet.figlet_format('Welcome to Safe Heavens', font='doom')
+    title = pyfiglet.figlet_format('Welcome to Safe Heavens..!!', font='doom')
     print(f"[orange3]{title}[/orange3]")
 
 
@@ -214,7 +214,7 @@ def start_game():
     global co2_budget_points
     tprint("Welcome", font="random")
     time.sleep(2)
-    print("[bold magenta]Lets begin the adventure![/bold magenta]")
+    print("[bold magenta]Lets begin the adventure![/bold magenta]\n ")
     time.sleep(1)
     print("[bold magenta]Outline of our story: [/bold magenta] \n")
     time.sleep(3)
@@ -282,19 +282,20 @@ def start_game():
                 print(f"[bright_magenta]YOUR CO2 POINTS REMAIN THE SAME: [/bright_magenta] " + str(co2_budget_points))
             else:
                 co2_budget_points = 0
-                print(simple_colors.yellow(f"Wrong answer. You loose all your co2 points {co2_budget_points}"))
+                print(f"[bright_red]Wrong answer. You loose all your co2 points {co2_budget_points}[/bright_red]")
         if index == bonus_question:
             title = pyfiglet.figlet_format('"Bonus Question"!!', font='3-d')
-            print(simple_colors.magenta(f"{title}"))
+            print(f"[bright_magenta]{title}[/bright_magenta]")
             art_question()
 
-        print(f"[bright_green]{questions_answers[index]['question']}[/bright_green]")
+        print(f"[bright_green]{questions_answers[index]['question']}[/bright_green]\n")
 
         answer_choices = questions_answers[index]["choices"]
         answer = questions_answers[index]["answer"]
 
         for choice_index in range(0, len(answer_choices)):
             print(str(choice_index + 1) + ". " + answer_choices[choice_index])
+            print("\n")
 
         print("[deep_sky_blue1]You can buy hint by pressing 'h'. Note: your 300 points will be deducted for the hint.[/deep_sky_blue1]\n ")
         answer_index = input("Enter option number here: ")
@@ -330,8 +331,7 @@ def start_game():
                     game_over()
                     break
             if riddle["answer"] != answer:
-                title = pyfiglet.figlet_format('You lose', font='block')
-                print(f"[bright_red]{title}[/bright_red]")
+                print(f"[bright_red]Wrong Answer[/bright_red]")
                 if co2_budget_points >= 4500:
                     print("[bright_yellow]You have given an extra life.. Since you have more tha 4500 co2_budget points at your end. [/bright_yellow]\n")
                     print("[bright_yellow]Your points above 4500 will be saved for next time you play.. \n[/bright_yellow]")
